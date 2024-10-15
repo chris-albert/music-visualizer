@@ -18,7 +18,7 @@ export const FileLoaderComponent: React.FC<FileLoaderComponentProps> = ({
       tabIndex={-1}
       startIcon={<CloudUploadIcon />}
     >
-      Upload files
+      Upload file
       <input
         type="file"
         hidden={true}

@@ -1,8 +1,6 @@
 import React from 'react'
 import {Box} from "@mui/material"
-import {FileLoaderComponent} from "./FileLoaderComponent";
-import {PlayPauseButtonComponent} from "./PlayPauseButtonComponent";
-import {useAudioContext} from "../hooks/useAudioContext";
+import {useGlobalAnalyser, useGlobalAudioPlayer} from "../hooks/useAudioContext";
 
 type VisOneComponentProps = {}
 
@@ -17,32 +15,26 @@ let animationController
  */
 export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
 
-  const audioContext = useAudioContext()
-  const [file, setFile] = React.useState<File | undefined>(undefined)
-  const audioRef = React.useRef<HTMLAudioElement | null>(null)
-  const source = React.useRef<MediaElementAudioSourceNode | null>(null)
-  const analyzer = React.useRef<AnalyserNode | null>(null)
+  const analyzer = useGlobalAnalyser()
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
+  const audioPlayer = useGlobalAudioPlayer()
 
-  const handleAudioPlay = () => {
-    const audioContext = new AudioContext();
-    if (!source.current && audioRef.current) {
-      source.current = audioContext.createMediaElementSource(audioRef.current)
-      analyzer.current = audioContext.createAnalyser()
-      source.current.connect(analyzer.current)
-      analyzer.current.connect(audioContext.destination)
+  React.useEffect(() => {
+    if(audioPlayer !== undefined) {
+      if(audioPlayer.isPlaying) {
+        visualizeData()
+      }
     }
-    visualizeData()
-  }
+  }, [audioPlayer])
 
   const visualizeData = () => {
     animationController = window.requestAnimationFrame(visualizeData)
-    if(audioRef.current && canvasRef.current && analyzer.current) {
-      if (audioRef.current.paused) {
+    if(audioPlayer  && canvasRef.current && analyzer) {
+      if (!audioPlayer.isPlaying) {
         return cancelAnimationFrame(animationController);
       }
       const songData = new Uint8Array(140);
-      analyzer.current.getByteFrequencyData(songData);
+      analyzer.getByteFrequencyData(songData);
       const bar_width = 3;
       let start = 0;
       const ctx = canvasRef.current.getContext("2d");
@@ -77,37 +69,6 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
         gap: 5
       }}
     >
-      <FileLoaderComponent
-        onFileUpload={setFile}
-      />
-      <PlayPauseButtonComponent
-        onPlay={() => {
-          if(file !== undefined) {
-            file.arrayBuffer()
-              .then(arrayBuffer => {
-                return audioContext.decodeAudioData(arrayBuffer)
-              })
-              .then(audioBuffer => {
-                const source = audioContext.createBufferSource()
-                source.buffer = audioBuffer
-                return source
-              })
-              .then(source => {
-                source.connect(audioContext.destination)
-                source.start()
-              })
-          }
-        }}
-        onPause={() => {
-
-        }}
-      />
-      <audio
-        ref={audioRef}
-        onPlay={handleAudioPlay}
-        src={file !== undefined ? window.URL.createObjectURL(file) : undefined}
-        controls
-      />
       <Box
         sx={{
           border: '1px solid white',

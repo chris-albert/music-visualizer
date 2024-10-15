@@ -4,24 +4,18 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 
 type PlayPauseButtonComponentProps = {
+  isPlaying: boolean
   onPlay: () => void
   onPause: () => void
+  disabled: boolean
 }
 
 export const PlayPauseButtonComponent: React.FC<PlayPauseButtonComponentProps> = ({
+  isPlaying,
   onPlay,
-  onPause
+  onPause,
+  disabled
 }) => {
-
-  const [playing, setPlaying] = React.useState(false)
-
-  React.useEffect(() => {
-    if(playing) {
-      onPlay()
-    } else {
-      onPause()
-    }
-  }, [playing])
 
   return (
     <Button
@@ -32,10 +26,15 @@ export const PlayPauseButtonComponent: React.FC<PlayPauseButtonComponentProps> =
       variant='outlined'
       size="small"
       onClick={() => {
-        setPlaying(p => !p)
+        if(isPlaying) {
+          onPause()
+        } else {
+          onPlay()
+        }
       }}
+      disabled={disabled}
     >
-      {playing ? <PauseIcon /> : <PlayArrowIcon />}
+      {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
     </Button>
   )
 }
