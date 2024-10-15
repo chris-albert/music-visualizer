@@ -12,7 +12,6 @@ export const RootPage: React.FC<RootPageProps> = ({}) => {
       <Nav/>
       <Box sx={{p: 2}}>
         <Outlet/>
-
       </Box>
     </Box>
   )
