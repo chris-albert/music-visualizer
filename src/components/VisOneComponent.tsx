@@ -1,13 +1,23 @@
 import React from 'react'
 import {Box} from "@mui/material"
 import {FileLoaderComponent} from "./FileLoaderComponent";
+import {PlayPauseButtonComponent} from "./PlayPauseButtonComponent";
+import {useAudioContext} from "../hooks/useAudioContext";
 
 type VisOneComponentProps = {}
 
 let animationController
 
+/**
+ * Followed tutorial:
+ * https://www.telerik.com/blogs/adding-audio-visualization-react-app-using-web-audio-api
+ *
+ * React 2d canvas lib:
+ * https://github.com/konvajs/react-konva?tab=readme-ov-file
+ */
 export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
 
+  const audioContext = useAudioContext()
   const [file, setFile] = React.useState<File | undefined>(undefined)
   const audioRef = React.useRef<HTMLAudioElement | null>(null)
   const source = React.useRef<MediaElementAudioSourceNode | null>(null)
@@ -61,11 +71,36 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
   return (
     <Box
       sx={{
-        display: 'flex'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 5
       }}
     >
       <FileLoaderComponent
         onFileUpload={setFile}
+      />
+      <PlayPauseButtonComponent
+        onPlay={() => {
+          if(file !== undefined) {
+            file.arrayBuffer()
+              .then(arrayBuffer => {
+                return audioContext.decodeAudioData(arrayBuffer)
+              })
+              .then(audioBuffer => {
+                const source = audioContext.createBufferSource()
+                source.buffer = audioBuffer
+                return source
+              })
+              .then(source => {
+                source.connect(audioContext.destination)
+                source.start()
+              })
+          }
+        }}
+        onPause={() => {
+
+        }}
       />
       <audio
         ref={audioRef}
@@ -75,7 +110,8 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
       />
       <Box
         sx={{
-          border: '1px solid white'
+          border: '1px solid white',
+          flexShrink: 5
         }}
       >
         <canvas

@@ -1,5 +1,6 @@
 import React from 'react'
-import {Box} from "@mui/material"
+import {Box, Button} from "@mui/material"
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 type FileLoaderComponentProps = {
   onFileUpload: (f: File) => void
@@ -10,16 +11,25 @@ export const FileLoaderComponent: React.FC<FileLoaderComponentProps> = ({
 }) => {
 
   return (
-    <Box>
+    <Button
+      component="label"
+      role={undefined}
+      variant="contained"
+      tabIndex={-1}
+      startIcon={<CloudUploadIcon />}
+    >
+      Upload files
       <input
         type="file"
+        hidden={true}
         onChange={({target: {files}}) => {
           if (files !== null && files[0]) {
             const file = files[0]
             onFileUpload(file)
           }
         }}
+        multiple
       />
-    </Box>
+    </Button>
   )
 }
