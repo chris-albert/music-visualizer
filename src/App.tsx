@@ -17,7 +17,10 @@ const router = createBrowserRouter([
       }
     ]
   },
-]);
+],
+  {
+    basename: "/music-visualizer",
+  });
 
 const darkTheme = createTheme({
   palette: {
