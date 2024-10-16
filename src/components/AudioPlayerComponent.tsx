@@ -1,21 +1,19 @@
 import React from 'react'
 import {Box, LinearProgress, Typography} from "@mui/material"
-import {useAudioPlayer, useSetGlobalAudioPlayer} from "../hooks/useAudioContext";
+import {AudioPlayer} from "../hooks/useAudioContext";
 import {PlayPauseButtonComponent} from "./PlayPauseButtonComponent";
 import {secondsToMinutes} from "../utils/util";
 
 type AudioPlayerComponentProps = {
-  file: File | undefined
+  audioPlayer: AudioPlayer
 }
 
 export const AudioPlayerComponent: React.FC<AudioPlayerComponentProps> = ({
-  file
+  audioPlayer
 }) => {
 
-  const audioPlayer = useAudioPlayer(file)
-  useSetGlobalAudioPlayer(audioPlayer)
-  const {isPlaying, play, pause, seconds, durationSeconds} = audioPlayer
-  const progress = file ? (seconds / durationSeconds) * 100 : 0
+  const {isPlaying, play, pause, seconds, durationSeconds, isLoaded} = audioPlayer
+  const progress = isLoaded ? (seconds / durationSeconds) * 100 : 0
 
   return (
     <Box
@@ -26,7 +24,7 @@ export const AudioPlayerComponent: React.FC<AudioPlayerComponentProps> = ({
     >
       <PlayPauseButtonComponent
         isPlaying={isPlaying}
-        disabled={file === undefined}
+        disabled={!isLoaded}
         onPlay={play}
         onPause={pause}
       />

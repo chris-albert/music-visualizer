@@ -8,7 +8,8 @@ export type AudioPlayer = {
   play: () => void
   pause: () => void
   seconds: number,
-  durationSeconds: number
+  durationSeconds: number,
+  isLoaded: boolean
 }
 
 export const useAudioContext = (): AudioContext =>
@@ -20,8 +21,8 @@ export const useGlobalAnalyser = (): AnalyserNode =>
 export const useGlobalAudioPlayer = (): AudioPlayer | undefined =>
   useAtomValue(globalAudioPlayer)
 
-export const useSetGlobalAudioPlayer = (player: AudioPlayer) =>
-  useSetAtom(globalAudioPlayer)(player)
+export const useSetGlobalAudioPlayer = () =>
+  useSetAtom(globalAudioPlayer)
 
 export const useAudioBuffer = (file: File | undefined): AudioBuffer | undefined  => {
 
@@ -56,6 +57,7 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
   const [seconds, setSeconds] = React.useState(0)
   const [durationSeconds, setDurationSeconds] = React.useState(0)
   const [timer, setTimer] = React.useState<NodeJS.Timer | undefined>(undefined)
+  const [isLoaded, setIsLoaded] = React.useState(false)
 
   React.useEffect(() => {
     return () => {
@@ -92,6 +94,7 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
   React.useEffect(() => {
     if(audioBuffer !== undefined) {
       updateSource(audioBuffer)
+      setIsLoaded(true)
     }
   }, [audioBuffer])
 
@@ -117,6 +120,7 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
     play,
     pause,
     seconds,
-    durationSeconds
+    durationSeconds,
+    isLoaded
   }
 }

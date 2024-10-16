@@ -6,6 +6,10 @@ import {IndexPage} from "./pages/IndexPage";
 import CssBaseline from "@mui/material/CssBaseline";
 import {createTheme, ThemeProvider} from "@mui/material";
 
+const basename = process.env.NODE_ENV === 'development' ? {} : {
+  basename: "/music-visualizer"
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -18,9 +22,8 @@ const router = createBrowserRouter([
     ]
   },
 ],
-  {
-    basename: "/music-visualizer",
-  });
+  basename
+);
 
 const darkTheme = createTheme({
   palette: {

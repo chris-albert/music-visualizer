@@ -2,12 +2,21 @@ import React from 'react'
 import {AppBar, Box, Toolbar} from "@mui/material";
 import {FileLoaderComponent} from "./FileLoaderComponent";
 import {AudioPlayerComponent} from "./AudioPlayerComponent";
+import {useAudioPlayer, useSetGlobalAudioPlayer} from "../hooks/useAudioContext";
 
 type NavProps = {}
 
 export const Nav: React.FC<NavProps> = ({}) => {
 
   const [file, setFile] = React.useState<File | undefined>(undefined)
+  const player = useAudioPlayer(file)
+  const setGlobalAudioPlayer = useSetGlobalAudioPlayer()
+
+  React.useEffect(() => {
+    if(player !== undefined) {
+      setGlobalAudioPlayer(player)
+    }
+  }, [player])
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -22,7 +31,7 @@ export const Nav: React.FC<NavProps> = ({}) => {
             }}
           >
             <Box>
-              <AudioPlayerComponent file={file} />
+              <AudioPlayerComponent audioPlayer={player} />
             </Box>
             <Box sx={{ml: 1}}>
               <FileLoaderComponent
