@@ -18,8 +18,10 @@ export const useAudioContext = (): AudioContext =>
 export const useGlobalAnalyser = (): AnalyserNode =>
   useAtomValue(globalAnalyser)
 
-export const useGlobalAudioPlayer = (): AudioPlayer | undefined =>
-  useAtomValue(globalAudioPlayer)
+export const useGlobalAudioPlayer = (): AudioPlayer => {
+  const player = useAtomValue(globalAudioPlayer)
+  return player === undefined ? emptyAudioPlayer : player
+}
 
 export const useSetGlobalAudioPlayer = () =>
   useSetAtom(globalAudioPlayer)
@@ -45,7 +47,14 @@ export const useAudioBuffer = (file: File | undefined): AudioBuffer | undefined 
   return buffer
 }
 
-
+export const emptyAudioPlayer: AudioPlayer = ({
+  isPlaying: false,
+  play: () => {},
+  pause: () => {},
+  seconds: 0,
+  durationSeconds: 0,
+  isLoaded: false
+})
 
 export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
 

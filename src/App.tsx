@@ -36,7 +36,7 @@ const darkTheme = createTheme({
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline/>
         <RouterProvider router={router}/>

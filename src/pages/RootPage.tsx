@@ -8,9 +8,9 @@ type RootPageProps = {}
 export const RootPage: React.FC<RootPageProps> = ({}) => {
 
   return (
-    <Box>
+    <Box sx={{height: '100%'}}>
       <Nav/>
-      <Box sx={{p: 2}}>
+      <Box sx={{height: '100%'}}>
         <Outlet/>
       </Box>
     </Box>

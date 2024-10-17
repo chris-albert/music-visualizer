@@ -7,7 +7,7 @@ type IndexPageProps = {}
 export const IndexPage: React.FC<IndexPageProps> = ({}) => {
 
   return (
-    <Box>
+    <Box sx={{height: '100%'}}>
         <VisOneComponent />
     </Box>
   )

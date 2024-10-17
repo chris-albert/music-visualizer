@@ -1,6 +1,8 @@
 import React from 'react'
 import {Box} from "@mui/material"
 import {useGlobalAnalyser, useGlobalAudioPlayer} from "../hooks/useAudioContext";
+import _ from 'lodash'
+import {scale} from "../utils/util";
 
 type VisOneComponentProps = {}
 
@@ -15,27 +17,46 @@ let animationController
  */
 export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
 
+  const barWidth = 3
   const analyzer = useGlobalAnalyser()
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
   const audioPlayer = useGlobalAudioPlayer()
+  const canvasBoxRef = React.useRef<HTMLElement | null>(null)
+  const canvasWidth = React.useMemo(() => {
+    if(canvasBoxRef.current) {
+      return canvasBoxRef.current.offsetWidth
+    } else {
+      return 0
+    }
+  }, [canvasBoxRef.current])
+  const canvasHeight = React.useMemo(() => {
+    if(canvasBoxRef.current) {
+      return canvasBoxRef.current.offsetHeight
+    } else {
+      return 0
+    }
+  }, [canvasBoxRef.current])
+  const isPlaying = React.useRef(false)
 
   React.useEffect(() => {
-    if(audioPlayer !== undefined) {
       if(audioPlayer.isPlaying) {
+        isPlaying.current = true
         visualizeData()
+      } else {
+        isPlaying.current = false
       }
-    }
   }, [audioPlayer])
 
   const visualizeData = () => {
     animationController = window.requestAnimationFrame(visualizeData)
-    if(audioPlayer  && canvasRef.current && analyzer) {
-      if (!audioPlayer.isPlaying) {
+    if(canvasRef.current && analyzer) {
+      if (!isPlaying.current) {
         return cancelAnimationFrame(animationController);
       }
-      const songData = new Uint8Array(140);
+      const width = canvasRef.current.width
+      const bars = _.floor(width / barWidth)
+      const songData = new Uint8Array(bars);
       analyzer.getByteFrequencyData(songData);
-      const bar_width = 3;
       let start = 0;
       const ctx = canvasRef.current.getContext("2d");
       if(ctx) {
@@ -50,11 +71,16 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
             canvasRef.current.width,
             canvasRef.current.height
           );
-          gradient.addColorStop(0.2, "#2392f5");
-          gradient.addColorStop(0.5, "#fe0095");
-          gradient.addColorStop(1.0, "purple");
+          gradient.addColorStop(0.00, 'red');
+          gradient.addColorStop(1/6, 'orange');
+          gradient.addColorStop(2/6, 'yellow');
+          gradient.addColorStop(3/6, 'green')
+          gradient.addColorStop(4/6, 'aqua');
+          gradient.addColorStop(5/6, 'blue');
+          gradient.addColorStop(1.00, 'purple');
           ctx.fillStyle = gradient;
-          ctx.fillRect(start, canvasRef.current.height, bar_width, -songData[i]);
+          const value = scale(songData[i], [0, 256], [0, 500])
+          ctx.fillRect(start, canvasRef.current.height, barWidth, -value);
         }
       }
     }
@@ -63,16 +89,20 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
   return (
     <Box
       sx={{
+        border: '1px solid white',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 5
+        gap: 5,
+        height: '100%'
       }}
     >
       <Box
+        ref={canvasBoxRef}
         sx={{
-          border: '1px solid white',
-          flexShrink: 5
+          flexShrink: 5,
+          width: '100%',
+          height: '100%'
         }}
       >
         <canvas
@@ -80,8 +110,9 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
             verticalAlign: 'bottom'
           }}
           ref={canvasRef}
-          width={520}
-          height={200}
+          width={canvasWidth}
+          height={500}
+          // height={canvasHeight}
         />
       </Box>
     </Box>
