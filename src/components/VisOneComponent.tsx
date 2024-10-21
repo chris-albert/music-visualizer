@@ -29,13 +29,14 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
       return 0
     }
   }, [canvasBoxRef.current])
-  const canvasHeight = React.useMemo(() => {
+  const [canvasHeight, setCanvasHeight] = React.useState(500)
+
+  React.useEffect(() => {
     if(canvasBoxRef.current) {
-      return canvasBoxRef.current.offsetHeight
-    } else {
-      return 0
+      setCanvasHeight(canvasBoxRef.current.offsetHeight)
     }
   }, [canvasBoxRef.current])
+
   const isPlaying = React.useRef(false)
 
   React.useEffect(() => {
@@ -53,6 +54,9 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
       if (!isPlaying.current) {
         return cancelAnimationFrame(animationController);
       }
+      if(canvasBoxRef.current) {
+        setCanvasHeight(canvasBoxRef.current.offsetHeight)
+      }
       const width = canvasRef.current.width
       const bars = _.floor(width / barWidth)
       const songData = new Uint8Array(bars);
@@ -60,7 +64,7 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
       let start = 0;
       const ctx = canvasRef.current.getContext("2d");
       if(ctx) {
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        ctx.clearRect(0, 0, width, canvasHeight);
         for (let i = 0; i < songData.length; i++) {
           // compute x coordinate where we would draw
           start = i * 4;
@@ -68,8 +72,8 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
           let gradient = ctx.createLinearGradient(
             0,
             0,
-            canvasRef.current.width,
-            canvasRef.current.height
+            width,
+            canvasHeight
           );
           gradient.addColorStop(0.00, 'red');
           gradient.addColorStop(1/6, 'orange');
@@ -79,8 +83,8 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
           gradient.addColorStop(5/6, 'blue');
           gradient.addColorStop(1.00, 'purple');
           ctx.fillStyle = gradient;
-          const value = scale(songData[i], [0, 256], [0, 500])
-          ctx.fillRect(start, canvasRef.current.height, barWidth, -value);
+          const value = scale(songData[i], [0, 256], [0, canvasHeight])
+          ctx.fillRect(start, canvasHeight, barWidth, -value);
         }
       }
     }
@@ -111,8 +115,8 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
           }}
           ref={canvasRef}
           width={canvasWidth}
-          height={500}
-          // height={canvasHeight}
+          // height={500}
+          height={canvasHeight}
         />
       </Box>
     </Box>
