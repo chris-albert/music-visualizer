@@ -1,18 +1,27 @@
 import React from 'react'
-import {Box, Slider} from "@mui/material"
+import {
+  Box, Button,
+  ButtonGroup,
+  Divider,
+  FormControlLabel,
+  FormGroup,
+  List,
+  ListItem,
+  Slider,
+  Typography
+} from "@mui/material"
 import {VisOptionsComponent} from "../components/visualizations/VisOptionsComponent";
 import _ from "lodash";
-import {scale} from "../utils/util";
+import {scale, useStateRef} from "../utils/util";
 import {VisAnalyserComponent} from "../components/visualizations/VisAnalyserComponent";
 
 type SimpleVisPageProps = {}
 
 export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
 
-  // const barWidth = 3
-  const gapWidth = 1
-
-  const barWidthRef = React.useRef(3)
+  const [barWidth, setBarWidth, barWidthRef] = useStateRef(3)
+  const [gapWidth, setGapWidth, gapWidthRef] = useStateRef(1)
+  const [position, setPosition, positionRef] = useStateRef<'top' | 'center' | 'bottom'>('bottom')
 
   return (
     <Box sx={{
@@ -20,24 +29,51 @@ export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
     }}>
       <VisOptionsComponent
         options={
-          <Box
-            sx={{padding: 2}}
-          >
-            <Slider
-              value={barWidthRef.current}
-              min={1}
-              max={10}
-              onChange={(e, v) => {
-                console.log('chagend', v)
-                barWidthRef.current = typeof v === 'number' ? v : 3
-              }}
-            />
+          <Box>
+            <List>
+              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
+                <Typography>Bar Width</Typography>
+                <Slider
+                  valueLabelDisplay='auto'
+                  value={barWidth}
+                  min={1}
+                  max={10}
+                  onChange={(e, v) => {
+                    setBarWidth(p => typeof v === 'number' ? v : p)
+                  }}
+                />
+              </ListItem>
+              <Divider />
+              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
+                <Typography>Gap Width</Typography>
+                <Slider
+                  valueLabelDisplay='auto'
+                  value={gapWidth}
+                  min={1}
+                  max={10}
+                  onChange={(e, v) => {
+                    setGapWidth(p => typeof v === 'number' ? v : p)
+                  }}
+                />
+              </ListItem>
+              <Divider />
+              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
+                <Typography>Position</Typography>
+                <ButtonGroup variant="outlined" >
+                  <Button onClick={() => setPosition('top')}>Top</Button>
+                  <Button onClick={() => setPosition('center')}>Center</Button>
+                  <Button onClick={() => setPosition('bottom')}>Bottom</Button>
+                </ButtonGroup>
+              </ListItem>
+              <Divider />
+            </List>
           </Box>
         }
       >
         <VisAnalyserComponent
           onAnimate={(ctx, analyser, height, width) => {
             const barWidth = barWidthRef.current
+            const gapWidth = gapWidthRef.current
             const bars = _.floor(width / barWidth)
             const songData = new Uint8Array(bars);
             analyser.getByteFrequencyData(songData);

@@ -6,6 +6,7 @@ import {scale} from "../../utils/util";
 type VisWrapperComponentProps = {
   shouldAnimate: boolean
   onAnimate: (context: CanvasRenderingContext2D, height: number, width: number) => void
+  onIniti?: (context: CanvasRenderingContext2D, height: number, width: number) => void
 }
 
 let animationController

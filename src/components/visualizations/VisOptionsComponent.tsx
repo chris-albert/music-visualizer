@@ -42,7 +42,7 @@ export const VisOptionsComponent: React.FC<VisOptionsComponentProps> = ({
       >
         <Toolbar variant='dense' />
         <Box
-          sx={{width: 250}}
+          sx={{width: 300}}
         >
           {options}
         </Box>

@@ -1,4 +1,4 @@
-
+import React, {MutableRefObject} from 'react'
 
 export const secondsToMinutes = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60)
@@ -17,4 +17,15 @@ export const scale = (
 
   const percent = (input - yMin) / (yMax - yMin);
   return percent * (xMax - xMin) + xMin;
+}
+
+export const useStateRef = <A>(initial: A): [A, React.Dispatch<React.SetStateAction<A>>, MutableRefObject<A>] => {
+  const ref = React.useRef(initial)
+  const [state, setState]: [A, React.Dispatch<React.SetStateAction<A>>] = React.useState(initial)
+
+  React.useEffect(() => {
+    ref.current = state
+  }, [state])
+
+  return [state, setState, ref]
 }
