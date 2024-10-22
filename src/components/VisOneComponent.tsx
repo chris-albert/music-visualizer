@@ -93,7 +93,7 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
   return (
     <Box
       sx={{
-        border: '1px solid white',
+        // border: '1px solid white',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -115,7 +115,6 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
           }}
           ref={canvasRef}
           width={canvasWidth}
-          // height={500}
           height={canvasHeight}
         />
       </Box>

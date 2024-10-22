@@ -10,7 +10,7 @@ export const RootPage: React.FC<RootPageProps> = ({}) => {
   return (
     <Box sx={{height: '100%'}}>
       <Nav/>
-      <Box sx={{height: '100%'}}>
+      <Box sx={{height: 'calc(100% - 48px)'}}>
         <Outlet/>
       </Box>
     </Box>
