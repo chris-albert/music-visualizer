@@ -1,8 +1,8 @@
 import React from 'react'
 import {Box} from "@mui/material"
-import {useGlobalAnalyser, useGlobalAudioPlayer} from "../hooks/useAudioContext";
+import {useGlobalAnalyser, useGlobalAudioPlayer} from "../../hooks/useAudioContext";
 import _ from 'lodash'
-import {scale} from "../utils/util";
+import {scale} from "../../utils/util";
 
 type VisOneComponentProps = {}
 

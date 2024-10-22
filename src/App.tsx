@@ -2,9 +2,11 @@ import React from 'react';
 import './App.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {RootPage} from "./pages/RootPage";
-import {IndexPage} from "./pages/IndexPage";
 import CssBaseline from "@mui/material/CssBaseline";
 import {createTheme, ThemeProvider} from "@mui/material";
+import {SimpleVisPage} from "./pages/SimpleVisPage";
+import {IndexPage} from "./pages/IndexPage";
+import {VisStereoPage} from "./components/visualizations/VisStereoPage";
 
 const basename = process.env.NODE_ENV === 'development' ? {} : {
   basename: "/music-visualizer"
@@ -18,6 +20,14 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <IndexPage />
+      },
+      {
+        path: '/simple',
+        element: <SimpleVisPage />
+      },
+      {
+        path: '/stereo',
+        element: <VisStereoPage />
       }
     ]
   },
