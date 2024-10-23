@@ -3,8 +3,6 @@ import {
   Box, Button,
   ButtonGroup,
   Divider,
-  FormControlLabel,
-  FormGroup,
   List,
   ListItem,
   Slider,
@@ -14,6 +12,8 @@ import {VisOptionsComponent} from "../components/visualizations/VisOptionsCompon
 import _ from "lodash";
 import {scale, useStateRef} from "../utils/util";
 import {VisAnalyserComponent} from "../components/visualizations/VisAnalyserComponent";
+import {Gradient, GradientType, GradientTypes} from "../models/Gradient";
+import {SpectrumAnalyser, SpectrumAnalyserType, SpectrumAnalyserTypes} from "../models/SpectrumAnalysers";
 
 type SimpleVisPageProps = {}
 
@@ -21,7 +21,8 @@ export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
 
   const [barWidth, setBarWidth, barWidthRef] = useStateRef(3)
   const [gapWidth, setGapWidth, gapWidthRef] = useStateRef(1)
-  const [position, setPosition, positionRef] = useStateRef<'top' | 'center' | 'bottom'>('bottom')
+  const [position, setPosition, positionRef] = useStateRef<SpectrumAnalyserType>(SpectrumAnalyserTypes.Bottom())
+  const [gradient, setGradient, gradientRef] = useStateRef<GradientType>(GradientTypes.RainbowVertical())
 
   return (
     <Box sx={{
@@ -59,11 +60,28 @@ export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
               <Divider />
               <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
                 <Typography>Position</Typography>
-                <ButtonGroup variant="outlined" >
-                  <Button onClick={() => setPosition('top')}>Top</Button>
-                  <Button onClick={() => setPosition('center')}>Center</Button>
-                  <Button onClick={() => setPosition('bottom')}>Bottom</Button>
-                </ButtonGroup>
+                <Box sx={{
+                  alignSelf: 'center',
+                }}>
+                  <ButtonGroup variant="outlined">
+                    <Button variant={SpectrumAnalyserTypes.is.Top(position) ? 'contained': 'outlined'} onClick={() => setPosition(SpectrumAnalyserTypes.Top())}>Top</Button>
+                    <Button variant={SpectrumAnalyserTypes.is.Center(position) ? 'contained': 'outlined'} onClick={() => setPosition(SpectrumAnalyserTypes.Center())}>Center</Button>
+                    <Button variant={SpectrumAnalyserTypes.is.Bottom(position) ? 'contained': 'outlined'} onClick={() => setPosition(SpectrumAnalyserTypes.Bottom())}>Bottom</Button>
+                  </ButtonGroup>
+                </Box>
+              </ListItem>
+              <Divider />
+              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
+                <Typography>Gradient</Typography>
+                <Box sx={{
+                  alignSelf: 'center',
+                }}>
+                  <ButtonGroup variant="outlined">
+                    <Button variant={GradientTypes.is.RainbowVertical(gradient) ? 'contained': 'outlined'} onClick={() => setGradient(GradientTypes.RainbowVertical)}>Vert</Button>
+                    <Button variant={GradientTypes.is.RainbowDiagonal(gradient) ? 'contained': 'outlined'} onClick={() => setGradient(GradientTypes.RainbowDiagonal)}>Diag</Button>
+                    <Button variant={GradientTypes.is.RainbowHorizontal(gradient) ? 'contained': 'outlined'} onClick={() => setGradient(GradientTypes.RainbowHorizontal)}>Horiz</Button>
+                  </ButtonGroup>
+                </Box>
               </ListItem>
               <Divider />
             </List>
@@ -78,27 +96,14 @@ export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
             const songData = new Uint8Array(bars);
             analyser.getByteFrequencyData(songData);
             let start = 0;
+            Gradient.fromType(gradientRef.current, ctx, height, width)
             ctx.clearRect(0, 0, width, height);
+            const getY = SpectrumAnalyser.fromType(positionRef.current, ctx, height)
             for (let i = 0; i < songData.length; i++) {
-              // compute x coordinate where we would draw
               start = i * (barWidth + gapWidth);
-              //create a gradient for the  whole canvas
-              let gradient = ctx.createLinearGradient(
-                0,
-                0,
-                width,
-                height
-              );
-              gradient.addColorStop(0.00, 'red');
-              gradient.addColorStop(1 / 6, 'orange');
-              gradient.addColorStop(2 / 6, 'yellow');
-              gradient.addColorStop(3 / 6, 'green')
-              gradient.addColorStop(4 / 6, 'aqua');
-              gradient.addColorStop(5 / 6, 'blue');
-              gradient.addColorStop(1.00, 'purple');
-              ctx.fillStyle = gradient;
               const value = scale(songData[i], [0, 256], [0, height])
-              ctx.fillRect(start, height, barWidth, -value);
+              const y = getY(value)
+              ctx.fillRect(start, y.start, barWidth, y.end);
             }
           }}
         />

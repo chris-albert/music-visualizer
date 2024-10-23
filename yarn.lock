@@ -7977,6 +7977,11 @@ postcss@^8.3.5, postcss@^8.4.23, postcss@^8.4.33, postcss@^8.4.4:
     picocolors "^1.1.0"
     source-map-js "^1.2.1"
 
+pratica@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/pratica/-/pratica-2.3.0.tgz#31cefec4d7cbe3171c292239ab2f476405fa97c2"
+  integrity sha512-iQTsBYIZjvzzn5Oyf9QUOgkRR1+Gu4oEImVomYdSSj1RufEg8FoSxDs70P07OtIxBlDOkumMJaOFOAWwF0Zifg==
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -9662,6 +9667,11 @@ unicode-property-aliases-ecmascript@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/unicode-property-aliases-ecmascript/-/unicode-property-aliases-ecmascript-2.1.0.tgz#43d41e3be698bd493ef911077c9b131f827e8ccd"
   integrity sha512-6t3foTQI9qne+OZoVQB/8x8rk2k1eVy1gRXhV3oFQ5T6R1dqQ1xtin3XqSlx3+ATBkliTaR/hHyJBm+LVPNM8w==
+
+unionize@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/unionize/-/unionize-3.1.0.tgz#0a94d5b9e700a23d158ccb234bbf5fd371e8ccc3"
+  integrity sha512-LQZvbanzvpzvK0QYgRvnaA9VVe+g4nTbRlyoGGWDKFrZn0HJnDN5LC2Ti0+BxpKKOCrL3BQcRBVFPy/t12Y24Q==
 
 unique-string@^2.0.0:
   version "2.0.0"
