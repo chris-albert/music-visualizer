@@ -1,28 +1,25 @@
 import React from 'react'
-import {
-  Box, Button,
-  ButtonGroup,
-  Divider,
-  List,
-  ListItem,
-  Slider,
-  Typography
-} from "@mui/material"
+import {Box} from "@mui/material"
 import {VisOptionsComponent} from "../components/visualizations/VisOptionsComponent";
 import _ from "lodash";
-import {scale, useStateRef} from "../utils/util";
+import {scale} from "../utils/util";
 import {VisAnalyserComponent} from "../components/visualizations/VisAnalyserComponent";
-import {Gradient, GradientType, GradientTypes} from "../models/Gradient";
-import {SpectrumAnalyser, SpectrumAnalyserType, SpectrumAnalyserTypes} from "../models/SpectrumAnalysers";
+import {Gradient, GradientTypes} from "../models/Gradient";
+import {SpectrumAnalyser, SpectrumAnalyserTypes} from "../models/SpectrumAnalysers";
+import {SimpleSpectrumOptions, SpectrumOptions} from "../components/visualizations/SimpleSpectrumOptions";
 
 type SimpleVisPageProps = {}
 
+const initOptions: SpectrumOptions = {
+  barWidth: 3,
+  gapWidth: 1,
+  position: SpectrumAnalyserTypes.Bottom(),
+  gradient: GradientTypes.RainbowVertical()
+}
+
 export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
 
-  const [barWidth, setBarWidth, barWidthRef] = useStateRef(3)
-  const [gapWidth, setGapWidth, gapWidthRef] = useStateRef(1)
-  const [position, setPosition, positionRef] = useStateRef<SpectrumAnalyserType>(SpectrumAnalyserTypes.Bottom())
-  const [gradient, setGradient, gradientRef] = useStateRef<GradientType>(GradientTypes.RainbowVertical())
+  const spectrumOptionsRef = React.useRef<SpectrumOptions>(initOptions)
 
   return (
     <Box sx={{
@@ -30,75 +27,23 @@ export const SimpleVisPage: React.FC<SimpleVisPageProps> = () => {
     }}>
       <VisOptionsComponent
         options={
-          <Box>
-            <List>
-              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
-                <Typography>Bar Width</Typography>
-                <Slider
-                  valueLabelDisplay='auto'
-                  value={barWidth}
-                  min={1}
-                  max={10}
-                  onChange={(e, v) => {
-                    setBarWidth(p => typeof v === 'number' ? v : p)
-                  }}
-                />
-              </ListItem>
-              <Divider />
-              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
-                <Typography>Gap Width</Typography>
-                <Slider
-                  valueLabelDisplay='auto'
-                  value={gapWidth}
-                  min={1}
-                  max={10}
-                  onChange={(e, v) => {
-                    setGapWidth(p => typeof v === 'number' ? v : p)
-                  }}
-                />
-              </ListItem>
-              <Divider />
-              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
-                <Typography>Position</Typography>
-                <Box sx={{
-                  alignSelf: 'center',
-                }}>
-                  <ButtonGroup variant="outlined">
-                    <Button variant={SpectrumAnalyserTypes.is.Top(position) ? 'contained': 'outlined'} onClick={() => setPosition(SpectrumAnalyserTypes.Top())}>Top</Button>
-                    <Button variant={SpectrumAnalyserTypes.is.Center(position) ? 'contained': 'outlined'} onClick={() => setPosition(SpectrumAnalyserTypes.Center())}>Center</Button>
-                    <Button variant={SpectrumAnalyserTypes.is.Bottom(position) ? 'contained': 'outlined'} onClick={() => setPosition(SpectrumAnalyserTypes.Bottom())}>Bottom</Button>
-                  </ButtonGroup>
-                </Box>
-              </ListItem>
-              <Divider />
-              <ListItem sx={{display: "flex", flexDirection: 'column', alignItems: 'flex-start'}}>
-                <Typography>Gradient</Typography>
-                <Box sx={{
-                  alignSelf: 'center',
-                }}>
-                  <ButtonGroup variant="outlined">
-                    <Button variant={GradientTypes.is.RainbowVertical(gradient) ? 'contained': 'outlined'} onClick={() => setGradient(GradientTypes.RainbowVertical)}>Vert</Button>
-                    <Button variant={GradientTypes.is.RainbowDiagonal(gradient) ? 'contained': 'outlined'} onClick={() => setGradient(GradientTypes.RainbowDiagonal)}>Diag</Button>
-                    <Button variant={GradientTypes.is.RainbowHorizontal(gradient) ? 'contained': 'outlined'} onClick={() => setGradient(GradientTypes.RainbowHorizontal)}>Horiz</Button>
-                  </ButtonGroup>
-                </Box>
-              </ListItem>
-              <Divider />
-            </List>
-          </Box>
+          <SimpleSpectrumOptions
+            initOptions={initOptions}
+            onOptionsUpdate={opts => spectrumOptionsRef.current = opts}
+          />
         }
       >
         <VisAnalyserComponent
           onAnimate={(ctx, analyser, height, width) => {
-            const barWidth = barWidthRef.current
-            const gapWidth = gapWidthRef.current
+            const barWidth = spectrumOptionsRef.current.barWidth
+            const gapWidth = spectrumOptionsRef.current.gapWidth
             const bars = _.floor(width / barWidth)
             const songData = new Uint8Array(bars);
             analyser.getByteFrequencyData(songData);
             let start = 0;
-            Gradient.fromType(gradientRef.current, ctx, height, width)
+            Gradient.fromType(spectrumOptionsRef.current.gradient, ctx, height, width)
             ctx.clearRect(0, 0, width, height);
-            const getY = SpectrumAnalyser.fromType(positionRef.current, ctx, height)
+            const getY = SpectrumAnalyser.fromType(spectrumOptionsRef.current.position, ctx, height)
             for (let i = 0; i < songData.length; i++) {
               start = i * (barWidth + gapWidth);
               const value = scale(songData[i], [0, 256], [0, height])
