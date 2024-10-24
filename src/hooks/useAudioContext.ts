@@ -1,7 +1,12 @@
 import React from 'react'
 import _ from 'lodash'
 import {useAtomValue, useSetAtom} from "jotai";
-import {audioContextAtom, globalAnalyser, globalAudioPlayer} from "./state";
+import {audioContextAtom, globalAnalyserAtom, globalAudioPlayer} from "./state";
+
+export type StereoAnalyser = {
+  left: AnalyserNode
+  right: AnalyserNode
+}
 
 export type AudioPlayer = {
   isPlaying: boolean
@@ -15,8 +20,8 @@ export type AudioPlayer = {
 export const useAudioContext = (): AudioContext =>
   useAtomValue(audioContextAtom)
 
-export const useGlobalAnalyser = (): AnalyserNode =>
-  useAtomValue(globalAnalyser)
+export const useGlobalAnalyser = (): StereoAnalyser =>
+  useAtomValue(globalAnalyserAtom)
 
 export const useGlobalAudioPlayer = (): AudioPlayer => {
   const player = useAtomValue(globalAudioPlayer)
@@ -93,9 +98,13 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
   const updateSource = (buffer: AudioBuffer) => {
     setDurationSeconds(_.floor(buffer.duration))
     const source = audioContext.createBufferSource()
+    const splitter = audioContext.createChannelSplitter(2)
     source.buffer = buffer
-    source.connect(globalAnalyser)
-    globalAnalyser.connect(audioContext.destination)
+    source.connect(splitter)
+    splitter.connect(globalAnalyser.left, 0, 0)
+    splitter.connect(globalAnalyser.right, 1, 0)
+    source.connect(audioContext.destination)
+    // globalAnalyser.left.connect(audioContext.destination)
     source.addEventListener('ended', onEnded)
     setSource(source)
   }

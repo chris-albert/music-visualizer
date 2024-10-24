@@ -60,7 +60,7 @@ export const VisOneComponent: React.FC<VisOneComponentProps> = () => {
       const width = canvasRef.current.width
       const bars = _.floor(width / barWidth)
       const songData = new Uint8Array(bars);
-      analyzer.getByteFrequencyData(songData);
+      analyzer.left.getByteFrequencyData(songData);
       let start = 0;
       const ctx = canvasRef.current.getContext("2d");
       if(ctx) {

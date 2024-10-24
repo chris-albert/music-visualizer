@@ -1,12 +1,9 @@
 import React from 'react'
-import {Box} from "@mui/material"
-import _ from "lodash";
-import {scale} from "../../utils/util";
 import {VisWrapperComponent} from "./VisWrapperComponent";
-import {useGlobalAnalyser, useGlobalAudioPlayer} from "../../hooks/useAudioContext";
+import {StereoAnalyser, useGlobalAnalyser, useGlobalAudioPlayer} from "../../hooks/useAudioContext";
 
 type VisAnalyserComponentProps = {
-  onAnimate: (context: CanvasRenderingContext2D, analyser: AnalyserNode, height: number, width: number) => void
+  onAnimate: (context: CanvasRenderingContext2D, analyser: StereoAnalyser, height: number, width: number) => void
 }
 
 export const VisAnalyserComponent: React.FC<VisAnalyserComponentProps> = ({

@@ -1,10 +1,13 @@
 import {atom} from "jotai"
-import {AudioPlayer} from "./useAudioContext"
+import {AudioPlayer, StereoAnalyser} from "./useAudioContext"
 
 export const audioContextAtom = atom<AudioContext>(new AudioContext())
 
-export const globalAnalyser = atom<AnalyserNode>((get) =>
-  get(audioContextAtom).createAnalyser()
+export const globalAnalyserAtom = atom<StereoAnalyser>((get) =>
+  ({
+    left: get(audioContextAtom).createAnalyser(),
+    right: get(audioContextAtom).createAnalyser()
+  })
 )
 
 export const globalAudioPlayer = atom<AudioPlayer | undefined>(undefined)
