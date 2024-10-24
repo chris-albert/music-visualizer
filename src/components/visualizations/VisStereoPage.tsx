@@ -4,45 +4,51 @@ import {VisOptionsComponent} from "./VisOptionsComponent";
 import {VisAnalyserComponent} from "./VisAnalyserComponent";
 import {scale} from "../../utils/util";
 import _ from 'lodash'
+import {SimpleSpectrumOptions, SpectrumOptions} from "./SimpleSpectrumOptions";
+import {Gradient, GradientTypes} from "../../models/Gradient";
+import {SpectrumAnalyser, SpectrumAnalyserTypes} from "../../models/SpectrumAnalysers";
 
 type VisStereoPageProps = {}
 
+const initOptions: SpectrumOptions = {
+  barWidth: 3,
+  gapWidth: 1,
+  position: SpectrumAnalyserTypes.Bottom(),
+  gradient: GradientTypes.RainbowVertical()
+}
+
 export const VisStereoPage: React.FC<VisStereoPageProps> = () => {
-  const barWidth = 3
+
+  const spectrumOptionsRef = React.useRef<SpectrumOptions>(initOptions)
 
   return (
     <Box sx={{
-      // border: "1px solid white",
       height: '100%'
     }}>
-      <VisOptionsComponent>
+      <VisOptionsComponent
+        options={
+          <SimpleSpectrumOptions
+            initOptions={initOptions}
+            onOptionsUpdate={opts => spectrumOptionsRef.current = opts}
+          />
+        }
+      >
         <VisAnalyserComponent
           onAnimate={(ctx, analyser, height, width) => {
+            const barWidth = spectrumOptionsRef.current.barWidth
+            const gapWidth = spectrumOptionsRef.current.gapWidth
             const bars = _.floor(width / barWidth)
             const songData = new Uint8Array(bars);
             analyser.getByteFrequencyData(songData);
             let start = 0;
+            Gradient.fromType(spectrumOptionsRef.current.gradient, ctx, height, width)
             ctx.clearRect(0, 0, width, height);
+            const getY = SpectrumAnalyser.fromType(spectrumOptionsRef.current.position, ctx, height)
             for (let i = 0; i < songData.length; i++) {
-              // compute x coordinate where we would draw
-              start = i * 4;
-              //create a gradient for the  whole canvas
-              let gradient = ctx.createLinearGradient(
-                0,
-                0,
-                width,
-                height
-              );
-              gradient.addColorStop(0.00, 'red');
-              gradient.addColorStop(1 / 6, 'orange');
-              gradient.addColorStop(2 / 6, 'yellow');
-              gradient.addColorStop(3 / 6, 'green')
-              gradient.addColorStop(4 / 6, 'aqua');
-              gradient.addColorStop(5 / 6, 'blue');
-              gradient.addColorStop(1.00, 'purple');
-              ctx.fillStyle = gradient;
+              start = i * (barWidth + gapWidth);
               const value = scale(songData[i], [0, 256], [0, height])
-              ctx.fillRect(start, height, barWidth, -value);
+              const y = getY(value)
+              ctx.fillRect(start, y.start, barWidth, y.end);
             }
           }}
         />

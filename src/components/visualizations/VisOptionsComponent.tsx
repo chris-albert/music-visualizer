@@ -40,7 +40,6 @@ export const VisOptionsComponent: React.FC<VisOptionsComponentProps> = ({
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
       >
-        <Toolbar variant='dense' />
         <Box
           sx={{width: 300}}
         >

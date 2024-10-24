@@ -16,10 +16,10 @@ export const FileLoaderComponent: React.FC<FileLoaderComponentProps> = ({
     <Box
       sx={{
         display: 'flex',
+        flexDirection: "column",
         alignItems: 'center'
     }}
     >
-      {filename !== '' ? <Chip sx={{mr: 1}} label={filename} variant="outlined" /> : null}
       <Button
         component="label"
         role={undefined}
@@ -41,6 +41,7 @@ export const FileLoaderComponent: React.FC<FileLoaderComponentProps> = ({
           multiple
         />
       </Button>
+      {filename !== '' ? <Chip sx={{mt: 1}} label={filename} variant="outlined" /> : null}
     </Box>
   )
 }

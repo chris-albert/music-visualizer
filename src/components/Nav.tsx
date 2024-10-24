@@ -38,7 +38,7 @@ export const Nav: React.FC<NavProps> = ({}) => {
             }}
           >
             <Box>
-              <AudioPlayerComponent audioPlayer={player} />
+              <AudioPlayerComponent audioPlayer={player}/>
             </Box>
             <Box sx={{ml: 1}}>
               <FileLoaderComponent
