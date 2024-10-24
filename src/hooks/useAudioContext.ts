@@ -1,11 +1,16 @@
 import React from 'react'
 import _ from 'lodash'
 import {useAtomValue, useSetAtom} from "jotai";
-import {audioContextAtom, globalAnalyserAtom, globalAudioPlayer} from "./state";
+import {audioContextAtom, globalAnalyserAtom, globalAudioPlayer, globalStereoGainAtom} from "./state";
 
 export type StereoAnalyser = {
   left: AnalyserNode
   right: AnalyserNode
+}
+
+export type StereoGain = {
+  left: GainNode
+  right: GainNode
 }
 
 export type AudioPlayer = {
@@ -22,6 +27,9 @@ export const useAudioContext = (): AudioContext =>
 
 export const useGlobalAnalyser = (): StereoAnalyser =>
   useAtomValue(globalAnalyserAtom)
+
+export const useGlobalStereoGain = (): StereoGain =>
+  useAtomValue(globalStereoGainAtom)
 
 export const useGlobalAudioPlayer = (): AudioPlayer => {
   const player = useAtomValue(globalAudioPlayer)
@@ -65,6 +73,7 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
 
   const audioContext = useAudioContext()
   const globalAnalyser = useGlobalAnalyser()
+  const globalGain = useGlobalStereoGain()
   const audioBuffer = useAudioBuffer(file)
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [source, setSource] = React.useState<AudioBufferSourceNode | undefined>(undefined)
@@ -101,10 +110,24 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
     const splitter = audioContext.createChannelSplitter(2)
     source.buffer = buffer
     source.connect(splitter)
-    splitter.connect(globalAnalyser.left, 0, 0)
-    splitter.connect(globalAnalyser.right, 1, 0)
-    source.connect(audioContext.destination)
-    // globalAnalyser.left.connect(audioContext.destination)
+
+    // splitter.connect(globalAnalyser.left, 0, 0)
+    // splitter.connect(globalAnalyser.right, 1, 0)
+
+    splitter.connect(globalGain.left, 0, 0)
+    splitter.connect(globalGain.right, 1, 0)
+
+    const merger = audioContext.createChannelMerger(2)
+    globalGain.left.gain.value = .5
+    globalGain.right.gain.value = .5
+    globalGain.left.connect(merger, 0, 0)
+    globalGain.right.connect(merger, 0, 1)
+
+    globalGain.left.connect(globalAnalyser.left)
+    globalGain.right.connect(globalAnalyser.right)
+    merger.connect(audioContext.destination)
+    // source.connect(audioContext.destination)
+
     source.addEventListener('ended', onEnded)
     setSource(source)
   }

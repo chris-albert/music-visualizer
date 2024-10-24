@@ -7,7 +7,7 @@ import {
   List,
   ListItem,
   ListItemButton, ListItemIcon,
-  ListItemText,
+  ListItemText, Slider,
   Toolbar
 } from "@mui/material"
 import ListIcon from "@mui/icons-material/List";
@@ -16,6 +16,8 @@ import {FileLoaderComponent} from "./FileLoaderComponent";
 import {useAudioPlayer, useSetGlobalAudioPlayer} from "../hooks/useAudioContext";
 import {useNavigate} from "react-router-dom";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import {Knob} from "primereact/knob";
+import {AudioToolsComponent} from "./AudioToolsComponent";
 type PlayerNavProps = {}
 
 export const PlayerNav: React.FC<PlayerNavProps> = () => {
@@ -70,6 +72,12 @@ export const PlayerNav: React.FC<PlayerNavProps> = () => {
           <List>
             <ListItem sx={{pt: 0}}>
               <AudioPlayerComponent audioPlayer={player}/>
+            </ListItem>
+            <Divider />
+            <ListItem sx={{
+              height: 100
+            }}>
+              <AudioToolsComponent />
             </ListItem>
             <Divider />
             <ListItem
