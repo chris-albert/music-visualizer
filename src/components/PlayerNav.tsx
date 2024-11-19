@@ -18,21 +18,13 @@ import {useNavigate} from "react-router-dom";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import {Knob} from "primereact/knob";
 import {AudioToolsComponent} from "./AudioToolsComponent";
+import {AudioSourceComponent} from "./AudioSourceComponent";
 type PlayerNavProps = {}
 
 export const PlayerNav: React.FC<PlayerNavProps> = () => {
 
-  const [file, setFile] = React.useState<File | undefined>(undefined)
-  const player = useAudioPlayer(file)
-  const setGlobalAudioPlayer = useSetGlobalAudioPlayer()
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
   const navigation = useNavigate()
-
-  React.useEffect(() => {
-    if(player !== undefined) {
-      setGlobalAudioPlayer(player)
-    }
-  }, [player])
 
   return (
     <Box sx={{
@@ -70,25 +62,12 @@ export const PlayerNav: React.FC<PlayerNavProps> = () => {
           }}
         >
           <List>
-            <ListItem sx={{pt: 0}}>
-              <AudioPlayerComponent audioPlayer={player}/>
-            </ListItem>
+            <AudioSourceComponent />
             <Divider />
             <ListItem sx={{
               height: 100
             }}>
               <AudioToolsComponent />
-            </ListItem>
-            <Divider />
-            <ListItem
-              sx={{
-                display: 'flex',
-                justifyContent: "center"
-              }}
-            >
-              <FileLoaderComponent
-                onFileUpload={setFile}
-              />
             </ListItem>
             <Divider />
           </List>

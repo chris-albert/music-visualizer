@@ -7,6 +7,8 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import {SimpleVisPage} from "./pages/SimpleVisPage";
 import {IndexPage} from "./pages/IndexPage";
 import {VisStereoPage} from "./components/visualizations/VisStereoPage";
+import {PrimeReactProvider} from "primereact/api";
+import "primereact/resources/themes/lara-light-cyan/theme.css"
 
 const basename = process.env.NODE_ENV === 'development' ? {} : {
   basename: "/music-visualizer"
@@ -49,7 +51,9 @@ function App() {
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={darkTheme}>
         <CssBaseline/>
-        <RouterProvider router={router}/>
+        <PrimeReactProvider>
+          <RouterProvider router={router}/>
+        </PrimeReactProvider>
       </ThemeProvider>
     </div>
   );

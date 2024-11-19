@@ -32,6 +32,7 @@ export const AudioToolsComponent: React.FC<AudioToolsComponentProps> = () => {
           size={50}
           min={0}
           max={100}
+          textColor='white'
         />
         <Typography>Left</Typography>
       </Box>
@@ -42,6 +43,7 @@ export const AudioToolsComponent: React.FC<AudioToolsComponentProps> = () => {
           size={50}
           min={0}
           max={100}
+          textColor='white'
         />
         <Typography>Right</Typography>
       </Box>
