@@ -61,7 +61,7 @@ export const PlayerNav: React.FC<PlayerNavProps> = () => {
             height: '100%'
           }}
         >
-          <List>
+          <List sx={{pt: 0}}>
             <AudioSourceComponent />
             <Divider />
             <ListItem sx={{

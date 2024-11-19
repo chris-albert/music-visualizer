@@ -1,5 +1,5 @@
 import React from 'react'
-import {Box, Divider, ListItem} from "@mui/material"
+import {Box, Divider, ListItem, Typography} from "@mui/material"
 import {useAudioPlayer, useSetGlobalAudioPlayer} from "../../hooks/useAudioContext";
 import {AudioPlayerComponent} from "../AudioPlayerComponent";
 import {FileLoaderComponent} from "../FileLoaderComponent";
@@ -20,7 +20,7 @@ export const UploadComponent: React.FC<UploadComponentProps> = () => {
 
   return (
     <>
-      <ListItem sx={{pt: 0}}>
+      <ListItem>
         <AudioPlayerComponent audioPlayer={player}/>
       </ListItem>
       <Divider />

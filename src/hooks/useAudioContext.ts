@@ -60,6 +60,41 @@ export const useAudioBuffer = (file: File | undefined): AudioBuffer | undefined 
   return buffer
 }
 
+export type GlobalAudioChainOutput = {
+  output: AudioNode
+}
+
+export const useGloabalAudioChain = (node: AudioNode | undefined): GlobalAudioChainOutput => {
+
+  const audioContext = useAudioContext()
+  const globalAnalyser = useGlobalAnalyser()
+  const globalGain = useGlobalStereoGain()
+
+  const splitter = audioContext.createChannelSplitter(2)
+
+  splitter.connect(globalGain.left, 0, 0)
+  splitter.connect(globalGain.right, 1, 0)
+
+  const merger = audioContext.createChannelMerger(2)
+  globalGain.left.gain.value = .5
+  globalGain.right.gain.value = .5
+  globalGain.left.connect(merger, 0, 0)
+  globalGain.right.connect(merger, 0, 1)
+
+  globalGain.left.connect(globalAnalyser.left)
+  globalGain.right.connect(globalAnalyser.right)
+
+  if(node !== undefined) {
+    console.log('Connecting to output')
+    node.connect(splitter)
+  }
+  merger.connect(audioContext.destination)
+
+  return {
+    output: merger
+  }
+}
+
 export const emptyAudioPlayer: AudioPlayer = ({
   isPlaying: false,
   play: () => {},
@@ -111,9 +146,6 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
     source.buffer = buffer
     source.connect(splitter)
 
-    // splitter.connect(globalAnalyser.left, 0, 0)
-    // splitter.connect(globalAnalyser.right, 1, 0)
-
     splitter.connect(globalGain.left, 0, 0)
     splitter.connect(globalGain.right, 1, 0)
 
@@ -126,7 +158,6 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
     globalGain.left.connect(globalAnalyser.left)
     globalGain.right.connect(globalAnalyser.right)
     merger.connect(audioContext.destination)
-    // source.connect(audioContext.destination)
 
     source.addEventListener('ended', onEnded)
     setSource(source)
@@ -164,4 +195,20 @@ export const useAudioPlayer = (file: File | undefined): AudioPlayer => {
     durationSeconds,
     isLoaded
   }
+}
+
+export const useMic = () => {
+
+  const [node, setNode] = React.useState<AudioNode | undefined>(undefined)
+  const audioContext = useAudioContext()
+  const audioChain = useGloabalAudioChain(node)
+
+  React.useEffect(() => {
+    navigator.mediaDevices.getUserMedia({audio: true})
+      .then(stream =>
+        audioContext.createMediaStreamSource(stream)
+      )
+      .then(node => setNode(node))
+  }, [])
+
 }
